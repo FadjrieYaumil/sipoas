@@ -3,376 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SI-POAS - Pendaftaran Sidang</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>SI-POAS - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
-        :root {
-            --primary: #00FF00;
-            --primary-dark: #8bc926;
-            --dark-bg: #121212;
-            --card-dark: #1e1e1e;
-            --text-light: #f5f5f5;
-            --danger: #e53935;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        body {
-            background-color: var(--dark-bg);
-            color: var(--text-light);
-            line-height: 1.6;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-        }
-
-        .logo h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: var(--text-light);
-        }
-
-        .logo .subtitle {
-            font-size: 1rem;
-            color: var(--primary);
-            font-weight: 500;
-        }
-
-        .form-card {
-            background: var(--card-dark);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            border: 2px solid var(--primary);
-            margin-bottom: 30px;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .input-field input, .input-field textarea {
-            width: 100%;
-            padding: 15px;
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 2px solid #333;
-            border-radius: 12px;
-            color: var(--text-light);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .input-field input:focus, .input-field textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .form-row {
-            display: flex;
-            gap: 20px;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        .btn-submit {
-            background: var(--primary);
-            color: #000;
-            border: none;
-            padding: 15px 25px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-submit:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .time-slots {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .time-slot {
-            padding: 12px;
-            text-align: center;
-            border: 2px solid #333;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .time-slot:hover {
-            background: rgba(0, 255, 0, 0.1);
-            border-color: var(--primary);
-        }
-
-        .time-slot.selected {
-            background: var(--primary);
-            color: #000;
-            border-color: var(--primary);
-        }
-
-        .time-slot.occupied {
-            background: rgba(229, 57, 53, 0.3) !important;
-            border-color: var(--danger) !important;
-            cursor: not-allowed !important;
-            color: #999 !important;
-            position: relative;
-        }
-
-        .time-slot.occupied::after {
-            content: "❌ TERISI";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 0.7em;
-            font-weight: bold;
-            color: var(--danger);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 2px 5px;
-            border-radius: 4px;
-        }
-
-        .time-slot.occupied:hover {
-            background: rgba(229, 57, 53, 0.4) !important;
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 10px;
-            color: white;
-            z-index: 1000;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-            max-width: 350px;
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification.success {
-            background: var(--primary);
-            color: #000;
-        }
-
-        .notification.error {
-            background: var(--danger);
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #ffffff;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .receipt {
-            background: rgba(0, 255, 0, 0.1);
-            padding: 25px;
-            border-radius: 12px;
-            border: 2px solid var(--primary);
-            margin-top: 20px;
-        }
-
-        .queue-number {
-            font-size: 3em;
-            font-weight: bold;
-            color: var(--primary);
-            text-align: center;
-            margin: 10px 0;
-        }
-
-        .connection-status {
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-
-        .status-connected {
-            background: rgba(0, 255, 0, 0.1);
-            color: var(--primary);
-            border: 1px solid var(--primary);
-        }
-
-        .status-error {
-            background: rgba(229, 57, 53, 0.1);
-            color: var(--danger);
-            border: 1px solid var(--danger);
-        }
-
-        .occupied-info {
-            margin-top: 10px;
-            padding: 10px;
-            background: rgba(229, 57, 53, 0.1);
-            border-radius: 8px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #ff6b6b;
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-            
-            .time-slots {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+        /* ... (CSS tetap sama) ... */
     </style>
 </head>
 <body>
+    <!-- Particle Background -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Notifications -->
     <div id="notification" class="notification"></div>
 
     <div class="container">
-        <div class="header">
-            <div class="logo">
-                <h1>SI-POAS</h1>
-                <p class="subtitle">Sistem Pendaftaran Online Antrian Sidang</p>
-                <p style="font-size: 0.9rem; color: #aaa; margin-top: 5px;">Pengadilan Agama Tarutung</p>
-            </div>
-        </div>
+        <!-- ... (HTML struktur tetap sama) ... -->
 
-        <!-- Connection Status -->
-        <div id="connection-status" class="connection-status">
-            <div class="loading"></div> Memeriksa koneksi server...
-        </div>
-
-        <div class="form-card">
-            <h2 style="text-align: center; margin-bottom: 30px;">Formulir Pendaftaran Sidang</h2>
-
-            <form id="registration-form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="nama" class="form-label">Nama Lengkap *</label>
-                        <div class="input-field">
-                            <input type="text" id="nama" name="nama" placeholder="Masukkan nama lengkap" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="email" class="form-label">Email *</label>
-                        <div class="input-field">
-                            <input type="email" id="email" name="email" placeholder="Masukkan alamat email" required>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="whatsapp" class="form-label">Nomor WhatsApp *</label>
-                        <div class="input-field">
-                            <input type="tel" id="whatsapp" name="whatsapp" placeholder="Contoh: 628123456789" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="no_perkara" class="form-label">Nomor Perkara *</label>
-                        <div class="input-field">
-                            <input type="text" id="no_perkara" name="no_perkara" placeholder="Masukkan nomor perkara" required>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="tanggal_sidang" class="form-label">Tanggal Sidang *</label>
-                        <div class="input-field">
-                            <input type="date" id="tanggal_sidang" name="tanggal_sidang" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Waktu Sidang *</label>
-                        <div class="time-slots" id="time-slots">
-                            <div class="time-slot" data-time="09:00">09:00<br><small>No. 1</small></div>
-                            <div class="time-slot" data-time="10:00">10:00<br><small>No. 2</small></div>
-                            <div class="time-slot" data-time="11:00">11:00<br><small>No. 3</small></div>
-                            <div class="time-slot" data-time="12:00">12:00<br><small>No. 4</small></div>
-                            <div class="time-slot" data-time="13:00">13:00<br><small>No. 5</small></div>
-                            <div class="time-slot" data-time="14:00">14:00<br><small>No. 6</small></div>
-                        </div>
-        
-                        <input type="hidden" id="waktu_sidang" name="waktu_sidang" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="alasan" class="form-label">Alasan / Deskripsi Sidang</label>
-                    <div class="input-field">
-                        <textarea id="alasan" name="alasan" placeholder="Jelaskan alasan atau deskripsi sidang..." rows="4"></textarea>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-submit" id="submit-btn">
-                    <i class="fas fa-paper-plane"></i> Daftar Sidang
-                </button>
-            </form>
-        </div>
-
-        <!-- Struk Pendaftaran -->
-        <div id="receipt" class="form-card" style="display: none;">
-            <h2 style="text-align: center; margin-bottom: 20px; color: var(--primary);">
-                <i class="fas fa-check-circle"></i> Pendaftaran Berhasil!
-            </h2>
-            <div id="receipt-content">
-                <!-- Konten struk akan diisi JavaScript -->
-            </div>
-            <div style="text-align: center; margin-top: 20px;">
-                <button class="btn-submit" onclick="location.reload()">
-                    <i class="fas fa-plus"></i> Daftar Lagi
-                </button>
-            </div>
-        </div>
+        <!-- Queue List -->
+        <h3 style="margin: 30px 0 20px 0;">Daftar Antrian Sidang - <span id="current-date-display"></span></h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>No Antrian</th>
+                    <th>Nama</th>
+                    <th>No Perkara</th>
+                    <th>WhatsApp</th>
+                    <th>Tanggal & Waktu Sidang</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="queue-table-body">
+                <tr>
+                    <td colspan="7" style="text-align: center;">
+                        <div class="loading"></div> Memuat data...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
     <script>
@@ -381,451 +51,757 @@
         // ================================
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwhq1vcAWtABl4UHDrkPiwlIaaIPMHDWgJhO6nL6Nnx0Rl7MLnICWrgNe5N3A0VBx9n/exec';
         
+        // Konfigurasi EmailJS
         const EMAILJS_CONFIG = {
             PUBLIC_KEY: "HCCzIO1iChSuIxGgk",
             SERVICE_ID: "service_h3zxr5q",
             TEMPLATES: {
                 CONFIRMATION: "template_5jvzx2f",
-                REMINDER: "template_c18nu1t"
+                REMINDER: "template_c18nu1t",
+                CALL_NOTIFICATION: "template_c18nu1t"
             },
             ADMIN_EMAIL: "protocoltype01@gmail.com"
         };
 
         // Inisialisasi EmailJS
-        emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+        if (EMAILJS_CONFIG.PUBLIC_KEY) {
+            emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+        }
 
-        class PendaftaranSystem {
+        // Particle Background
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const size = Math.random() * 20 + 5;
+                const left = Math.random() * 100;
+                const animationDuration = Math.random() * 20 + 10;
+                const animationDelay = Math.random() * 5;
+                const opacity = Math.random() * 0.1 + 0.05;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${left}%`;
+                particle.style.animationDuration = `${animationDuration}s`;
+                particle.style.animationDelay = `${animationDelay}s`;
+                particle.style.opacity = opacity;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        class AdminSystem {
             constructor() {
-                console.log('🟢 PendaftaranSystem initialized');
+                this.currentSession = null;
+                this.selectedCompletion = null;
+                this.isLoading = false;
                 this.initializeEventListeners();
-                this.enhanceDateInput();
-                this.testConnection();
+                this.loadQueueData();
+                this.startAutoRefresh();
             }
 
-            initializeEventListeners() {
-                document.getElementById('registration-form').addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    await this.handleRegistration();
+            initializeEventListeners() {    
+                document.getElementById('refresh-btn').addEventListener('click', () => {
+                    this.loadQueueData();
                 });
 
-                // Time slot selection
-                document.querySelectorAll('.time-slot').forEach(slot => {
-                    slot.addEventListener('click', () => {
-                        this.handleTimeSlotClick(slot);
+                document.getElementById('clear-queue-btn').addEventListener('click', () => {
+                    this.clearSelectedData();
+                });
+
+                document.getElementById('export-btn').addEventListener('click', () => {
+                    this.exportToExcel();
+                });
+
+                document.getElementById('date-filter').addEventListener('change', () => {
+                    this.loadQueueData();
+                });
+
+                // Session controls
+                document.getElementById('start-session').addEventListener('click', () => {
+                    this.startSession();
+                });
+
+                document.getElementById('next-session').addEventListener('click', () => {
+                    this.nextSession();
+                });
+
+                document.getElementById('end-session').addEventListener('click', () => {
+                    this.endSession();
+                });
+
+                document.getElementById('end-session-day').addEventListener('click', () => {
+                    this.closeSessionDay();
+                });
+
+                document.getElementById('resume-session').addEventListener('click', () => {
+                    this.resumeSession();
+                });
+
+                document.getElementById('clear-queue').addEventListener('click', () => {
+                    this.clearSelectedData();
+                });
+
+                // Completion options
+                document.querySelectorAll('.completion-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        document.querySelectorAll('.completion-option').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        option.classList.add('selected');
+                        
+                        const radio = option.querySelector('input[type="radio"]');
+                        radio.checked = true;
+                        this.selectedCompletion = radio.value;
+                        
+                        // Aktifkan tombol aksi
+                        document.getElementById('end-session').disabled = false;
+                        document.getElementById('next-session').disabled = false;
                     });
                 });
             }
 
-            handleTimeSlotClick(slot) {
-                // Jika slot sudah occupied, jangan biarkan dipilih
-                if (slot.classList.contains('occupied')) {
-                    this.showNotification('❌ Jam ini sudah terisi! Data dari database menunjukkan jam ini tidak tersedia.', 'error');
-                    return;
-                }
-
-                // Hapus seleksi sebelumnya dan pilih yang baru
-                document.querySelectorAll('.time-slot').forEach(s => {
-                    s.classList.remove('selected');
-                });
-                slot.classList.add('selected');
-                document.getElementById('waktu_sidang').value = slot.dataset.time;
-            }
-
-            enhanceDateInput() {
-                const dateInput = document.getElementById('tanggal_sidang');
+            async loadQueueData() {
+                if (this.isLoading) return;
                 
-                // Set minimum date to today
-                const today = new Date().toISOString().split('T')[0];
-                dateInput.min = today;
-                dateInput.value = today;
-                
-                // Load data dari database ketika tanggal berubah
-                dateInput.addEventListener('change', async (e) => {
-                    const selectedDate = e.target.value;
-                    await this.loadOccupiedSlotsFromDatabase(selectedDate);
-                });
-                
-                // Initial load data
-                this.loadOccupiedSlotsFromDatabase(dateInput.value);
-            }
-
-            async testConnection() {
                 try {
-                    const statusDiv = document.getElementById('connection-status');
+                    this.isLoading = true;
+                    this.showLoading();
+                    console.log('Loading queue data...');
                     
-                    const response = await fetch(`${APPS_SCRIPT_URL}?action=test&timestamp=${Date.now()}`);
-                    
-                    if (response.ok) {
-                        const result = await response.json();
-                        if (result.success) {
-                            statusDiv.innerHTML = '✅ <strong>Terhubung ke server</strong> - Sistem siap digunakan';
-                            statusDiv.className = 'connection-status status-connected';
-                        } else {
-                            throw new Error(result.error);
-                        }
-                    } else {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
-                } catch (error) {
-                    const statusDiv = document.getElementById('connection-status');
-                    statusDiv.innerHTML = `❌ <strong>Gagal terhubung:</strong> ${error.message}`;
-                    statusDiv.className = 'connection-status status-error';
-                    console.error('Connection test failed:', error);
-                }
-            }
-
-            async loadOccupiedSlotsFromDatabase(date) {
-                try {
-                    console.log('🟡 Loading occupied slots from database for:', date);
-                    
-                    const response = await fetch(`${APPS_SCRIPT_URL}?action=getQueue&date=${date}`);
+                    const response = await fetch(`${APPS_SCRIPT_URL}?action=getQueue&timestamp=${Date.now()}`);
                     
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     
                     const data = await response.json();
-                    console.log('🟢 Database response:', data);
+                    console.log('Data received:', data);
                     
-                    if (data.success && data.data && data.data.data) {
-                        this.updateTimeSlotsBasedOnDatabase(data.data.data, date);
-                    } else {
-                        // Jika tidak ada data, reset semua slot
-                        this.resetAllTimeSlots();
-                    }
-                    
-                } catch (error) {
-                    console.error('🔴 Error loading from database:', error);
-                    this.showNotification('⚠️ Gagal memuat data dari database', 'error');
-                }
-            }
-
-            updateTimeSlotsBasedOnDatabase(databaseData, date) {
-                console.log('🟡 Updating slots based on database data:', databaseData);
-                
-                // Reset semua slot terlebih dahulu
-                this.resetAllTimeSlots();
-                
-                // Filter data untuk tanggal yang dipilih
-                const occupiedForDate = databaseData.filter(item => 
-                    item.tanggal_sidang === date
-                );
-                
-                console.log('🟢 Occupied slots for date:', occupiedForDate);
-                
-                // Tandai slot yang sudah terisi berdasarkan database
-                occupiedForDate.forEach(item => {
-                    const slotElement = document.querySelector(`.time-slot[data-time="${item.waktu_sidang}"]`);
-                    if (slotElement) {
-                        slotElement.classList.add('occupied');
-                        slotElement.innerHTML = `${item.waktu_sidang}<br><small style="color: #e53935;">❌ TERISI</small>`;
-                        console.log('🔴 Marked as occupied from database:', item.waktu_sidang);
-                    }
-                });
-
-                // Reset selection
-                document.getElementById('waktu_sidang').value = '';
-                
-                // Update info
-                const occupiedInfo = document.getElementById('occupied-info');
-                if (occupiedForDate.length > 0) {
-                    occupiedInfo.innerHTML = `🔴 ${occupiedForDate.length} jam sudah terisi (data real-time dari database)`;
-                } 
-            }
-
-            resetAllTimeSlots() {
-                document.querySelectorAll('.time-slot').forEach(slot => {
-                    slot.classList.remove('occupied', 'selected');
-                    const time = slot.dataset.time;
-                    const number = this.getSlotNumber(time);
-                    slot.innerHTML = `${time}<br><small>No. ${number}</small>`;
-                });
-            }
-
-            getSlotNumber(time) {
-                const timeMap = {
-                    '09:00': 1, '10:00': 2, '11:00': 3,
-                    '12:00': 4, '13:00': 5, '14:00': 6
-                };
-                return timeMap[time] || 1;
-            }
-
-            async doubleCheckAvailability(tanggal, waktu) {
-                try {
-                    const response = await fetch(`${APPS_SCRIPT_URL}?action=checkAvailability&tanggal_sidang=${tanggal}&waktu_sidang=${waktu}`);
-                    
-                    if (response.ok) {
-                        const result = await response.json();
-                        return result;
-                    } else {
-                        throw new Error('HTTP error: ' + response.status);
-                    }
-                } catch (error) {
-                    console.error('Double check error:', error);
-                    // Return available sebagai fallback
-                    return { available: true, message: 'Tersedia' };
-                }
-            }
-
-            async handleRegistration() {
-                const submitBtn = document.getElementById('submit-btn');
-                const originalText = submitBtn.innerHTML;
-                
-                submitBtn.innerHTML = '<div class="loading"></div> Mengirim...';
-                submitBtn.disabled = true;
-
-                const formData = new FormData(document.getElementById('registration-form'));
-                const userData = {
-                    nama: formData.get('nama'),
-                    email: formData.get('email'),
-                    whatsapp: formData.get('whatsapp'),
-                    no_perkara: formData.get('no_perkara'),
-                    tanggal_sidang: formData.get('tanggal_sidang'),
-                    waktu_sidang: formData.get('waktu_sidang'),
-                    alasan: formData.get('alasan')
-                };
-
-                // Validasi client-side
-                if (!userData.waktu_sidang) {
-                    this.showNotification('Pilih waktu sidang terlebih dahulu!', 'error');
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                    return;
-                }
-
-                // Validasi: Cek apakah slot yang dipilih sudah terisi di database
-                const selectedSlot = document.querySelector('.time-slot.selected');
-                if (selectedSlot && selectedSlot.classList.contains('occupied')) {
-                    this.showNotification('❌ DITOLAK! Jam ini sudah terisi di database. Silakan pilih jam lain.', 'error');
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                    return;
-                }
-
-                // DOUBLE CHECK: Validasi ulang ke server sebelum submit
-                try {
-                    const doubleCheck = await this.doubleCheckAvailability(userData.tanggal_sidang, userData.waktu_sidang);
-                    if (!doubleCheck.available) {
-                        this.showNotification(`❌ GAGAL! ${doubleCheck.message}`, 'error');
-                        submitBtn.innerHTML = originalText;
-                        submitBtn.disabled = false;
+                    if (data.success) {
+                        const queueData = data.data.data || data.data || [];
+                        const dates = data.data.dates || [];
                         
-                        // Refresh data dari database
-                        await this.loadOccupiedSlotsFromDatabase(userData.tanggal_sidang);
+                        console.log('Queue data:', queueData);
+                        console.log('Dates:', dates);
+                        
+                        this.displayQueueData(queueData);
+                        this.updateStatistics(queueData);
+                        this.updateDateFilter(dates);
+                        this.updateSessionInfo(queueData);
+                    } else {
+                        throw new Error(data.error || 'Unknown error');
+                    }
+                } catch (error) {
+                    console.error('Load data error:', error);
+                    this.showNotification('Error memuat data: ' + error.message, 'error');
+                    this.displayQueueData([]);
+                } finally {
+                    this.isLoading = false;
+                }
+            }
+
+            displayQueueData(queue) {
+                const tbody = document.getElementById('queue-table-body');
+                const selectedDate = document.getElementById('date-filter').value;
+                
+                // Filter berdasarkan tanggal
+                const filteredQueue = selectedDate === 'all' 
+                    ? queue 
+                    : queue.filter(item => item.tanggal_sidang === selectedDate);
+                
+                if (filteredQueue.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Tidak ada data untuk tanggal ini</td></tr>';
+                    return;
+                }
+
+                // Urutkan berdasarkan waktu sidang
+                const sortedQueue = [...filteredQueue].sort((a, b) => {
+                    const timeOrder = {
+                        '09:00': 1, '10:00': 2, '11:00': 3, 
+                        '12:00': 4, '13:00': 5, '14:00': 6
+                    };
+                    return (timeOrder[a.waktu_sidang] || 0) - (timeOrder[b.waktu_sidang] || 0);
+                });
+
+                tbody.innerHTML = sortedQueue.map(item => {
+                    const isCurrentSession = this.currentSession && this.currentSession.queueNumber === item.queueNumber;
+                    const rowClass = isCurrentSession ? 'current-session' : '';
+                    
+                    return `
+                        <tr class="${rowClass}">
+                            <td><strong>${item.queueNumber || '-'}</strong></td>
+                            <td>${item.nama || '-'}</td>
+                            <td>${item.no_perkara || '-'}</td>
+                            <td>${item.whatsapp || '-'}</td>
+                            <td>${this.formatDateTime(item.tanggal_sidang, item.waktu_sidang)}</td>
+                            <td><span class="status-badge status-${item.status || 'waiting'}">${this.getStatusText(item.status)}</span></td>
+                            <td>
+                                <button class="btn-call" onclick="adminSystem.sendImmediateCall(${item.queueNumber || 0})">
+                                    <i class="fas fa-bell"></i> Panggil
+                                </button>
+                                <button class="btn" onclick="adminSystem.updateStatus(${item.queueNumber || 0}, 'ongoing')" 
+                                        ${(item.status === 'ongoing' || item.status === 'completed') ? 'disabled' : ''}>
+                                    Mulai
+                                </button>
+                                <button class="btn btn-success" onclick="adminSystem.updateStatus(${item.queueNumber || 0}, 'completed')"
+                                        ${item.status === 'completed' ? 'disabled' : ''}>
+                                    Selesai
+                                </button>
+                                <button class="btn btn-danger" onclick="adminSystem.deleteQueueItem(${item.queueNumber || 0})">
+                                    <i class="fas fa-trash"></i> Hapus
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            updateStatistics(queue) {
+                const selectedDate = document.getElementById('date-filter').value;
+                const filteredQueue = selectedDate === 'all' 
+                    ? queue 
+                    : queue.filter(item => item.tanggal_sidang === selectedDate);
+
+                const total = filteredQueue.length;
+                const waiting = filteredQueue.filter(item => item.status === 'waiting' || !item.status).length;
+                const ongoing = filteredQueue.filter(item => item.status === 'ongoing').length;
+                const completed = filteredQueue.filter(item => item.status === 'completed').length;
+
+                document.getElementById('total-count').textContent = total;
+                document.getElementById('waiting-count').textContent = waiting;
+                document.getElementById('ongoing-count').textContent = ongoing;
+                document.getElementById('completed-count').textContent = completed;
+            }
+
+            updateSessionInfo(queue) {
+                const currentSessionDiv = document.getElementById('current-session');
+                const startSessionControl = document.getElementById('start-session-control');
+                const resumeButton = document.getElementById('resume-session');
+                const adminControlsTop = document.getElementById('admin-controls-top');
+                const adminControlsLeft = document.getElementById('admin-controls-left');
+
+                const selectedDate = document.getElementById('date-filter').value;
+                const filteredQueue = selectedDate === 'all' 
+                    ? queue 
+                    : queue.filter(item => item.tanggal_sidang === selectedDate);
+
+                // Tampilkan kontrol admin jika ada data
+                if (filteredQueue.length > 0) {
+                    adminControlsTop.style.display = 'block';
+                    adminControlsLeft.style.display = 'block';
+                } else {
+                    adminControlsTop.style.display = 'none';
+                    adminControlsLeft.style.display = 'none';
+                }
+
+                // Cari sesi yang sedang berlangsung
+                const ongoingSession = filteredQueue.find(item => item.status === 'ongoing');
+                if (ongoingSession) {
+                    this.currentSession = ongoingSession;
+                }
+
+                if (this.currentSession) {
+                    document.getElementById('session-details').innerHTML = `
+                        <h4>${this.currentSession.nama}</h4>
+                        <p><strong>No Perkara:</strong> ${this.currentSession.no_perkara}</p>
+                        <p><strong>Email:</strong> ${this.currentSession.email}</p>
+                        <p><strong>WhatsApp:</strong> ${this.currentSession.whatsapp}</p>
+                        <p><strong>Nomor Antrian:</strong> ${this.currentSession.queueNumber}</p>
+                        <p><strong>Tanggal & Waktu Sidang:</strong> ${this.formatDateTime(this.currentSession.tanggal_sidang, this.currentSession.waktu_sidang)}</p>
+                        <p><strong>Alasan:</strong> ${this.currentSession.alasan || 'Tidak ada alasan'}</p>
+                        <p><strong>Waktu Mulai:</strong> ${new Date().toLocaleTimeString()}</p>
+                    `;
+                    currentSessionDiv.style.display = 'block';
+                    startSessionControl.style.display = 'none';
+                    resumeButton.style.display = 'none';
+                } else {
+                    currentSessionDiv.style.display = 'none';
+                    startSessionControl.style.display = 'block';
+                    resumeButton.style.display = 'none';
+                }
+            }
+
+            async startSession() {
+                try {
+                    const selectedDate = document.getElementById('date-filter').value;
+                    const queue = await this.getQueueForDate(selectedDate);
+                    const pendingQueue = queue.filter(item => 
+                        (item.status === 'waiting' || !item.status) && 
+                        item.tanggal_sidang === selectedDate
+                    );
+                    
+                    if (pendingQueue.length === 0) {
+                        this.showNotification('Tidak ada antrian yang menunggu untuk tanggal ini', 'error');
                         return;
                     }
-                } catch (error) {
-                    console.error('Double check error:', error);
-                    // Lanjutkan submit meski error double check
-                }
 
-                try {
-                    // Kirim data ke Google Sheets
-                    const response = await this.submitToGoogleSheets(userData);
+                    // Ambil peserta pertama yang menunggu
+                    const nextUser = pendingQueue[0];
                     
-                    if (response.success) {
-                        // Kirim email konfirmasi
-                        const emailSuccess = await this.sendConfirmationEmail(response.data);
-                        
-                        if (emailSuccess) {
-                            this.showReceipt(response.data);
-                            this.showNotification('✅ Pendaftaran berhasil! Data tersimpan di database dan email konfirmasi telah dikirim.', 'success');
-                            
-                            // Jadwalkan reminder
-                            this.scheduleReminder(response.data);
-                            
-                        } else {
-                            this.showReceipt(response.data);
-                            this.showNotification('✅ Pendaftaran berhasil! Data tersimpan di database, tapi gagal mengirim email konfirmasi.', 'success');
-                        }
-                        
-                        // RELOAD data dari database untuk update status jam
-                        setTimeout(() => {
-                            this.loadOccupiedSlotsFromDatabase(userData.tanggal_sidang);
-                        }, 1000);
-                        
-                    } else {
-                        throw new Error(response.error);
-                    }
+                    // Update status ke ongoing terlebih dahulu
+                    await this.updateStatus(nextUser.queueNumber, 'ongoing');
+                    
+                    // Set current session setelah update berhasil
+                    this.currentSession = {
+                        ...nextUser,
+                        startTime: new Date().toISOString()
+                    };
+
+                    // Kirim notifikasi email ke user
+                    await this.sendSessionNotification(nextUser, 'current');
+
+                    this.showNotification(`Sidang dimulai untuk: ${nextUser.nama}`, 'success');
+                    this.loadQueueData();
+                    
                 } catch (error) {
-                    this.showNotification('❌ Error: ' + error.message, 'error');
-                } finally {
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
+                    this.showNotification('Error: ' + error.message, 'error');
                 }
             }
 
-            async submitToGoogleSheets(userData) {
+            async nextSession() {
+                if (!this.selectedCompletion) {
+                    this.showNotification('Pilih status penyelesaian sidang terlebih dahulu.', 'error');
+                    return;
+                }
+
                 try {
-                    console.log('🟡 Mengirim data ke database:', userData);
+                    const isCompleted = this.selectedCompletion === 'completed';
                     
-                    const params = new URLSearchParams({
-                        action: 'register',
-                        nama: userData.nama,
-                        email: userData.email,
-                        whatsapp: userData.whatsapp,
-                        no_perkara: userData.no_perkara,
-                        tanggal_sidang: userData.tanggal_sidang,
-                        waktu_sidang: userData.waktu_sidang,
-                        alasan: userData.alasan || ''
+                    // Selesaikan sesi saat ini
+                    if (this.currentSession) {
+                        await this.updateStatus(this.currentSession.queueNumber, isCompleted ? 'completed' : 'waiting');
+                    }
+
+                    // Cari peserta berikutnya
+                    const selectedDate = document.getElementById('date-filter').value;
+                    const queue = await this.getQueueForDate(selectedDate);
+                    const pendingQueue = queue.filter(item => 
+                        (item.status === 'waiting' || !item.status) && 
+                        item.tanggal_sidang === selectedDate
+                    );
+                    
+                    if (pendingQueue.length > 0) {
+                        const nextUser = pendingQueue[0];
+                        
+                        // Update status ke ongoing terlebih dahulu
+                        await this.updateStatus(nextUser.queueNumber, 'ongoing');
+                        
+                        // Set current session setelah update berhasil
+                        this.currentSession = {
+                            ...nextUser,
+                            startTime: new Date().toISOString()
+                        };
+                        
+                        // Kirim notifikasi email ke user
+                        await this.sendSessionNotification(nextUser, 'current');
+                        
+                        this.showNotification(`Berhasil pindah ke sidang berikutnya: ${nextUser.nama}`, 'success');
+                    } else {
+                        this.currentSession = null;
+                        this.showNotification('Semua sidang untuk tanggal ini telah selesai', 'info');
+                    }
+                    
+                    // Reset selection
+                    this.selectedCompletion = null;
+                    document.querySelectorAll('.completion-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                        opt.querySelector('input[type="radio"]').checked = false;
+                    });
+                    document.getElementById('end-session').disabled = true;
+                    document.getElementById('next-session').disabled = true;
+                    
+                    this.loadQueueData();
+                    
+                } catch (error) {
+                    this.showNotification('Error: ' + error.message, 'error');
+                }
+            }
+
+            async endSession() {
+                if (!this.selectedCompletion) {
+                    this.showNotification('Pilih status penyelesaian sidang terlebih dahulu.', 'error');
+                    return;
+                }
+
+                try {
+                    const isCompleted = this.selectedCompletion === 'completed';
+                    
+                    if (this.currentSession) {
+                        await this.updateStatus(this.currentSession.queueNumber, isCompleted ? 'completed' : 'waiting');
+                        this.currentSession = null;
+                        this.showNotification('Sidang diakhiri', 'info');
+                    }
+                    
+                    // Reset selection
+                    this.selectedCompletion = null;
+                    document.querySelectorAll('.completion-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                        opt.querySelector('input[type="radio"]').checked = false;
+                    });
+                    document.getElementById('end-session').disabled = true;
+                    document.getElementById('next-session').disabled = true;
+                    
+                    this.loadQueueData();
+                    
+                } catch (error) {
+                    this.showNotification('Error: ' + error.message, 'error');
+                }
+            }
+
+            async resumeSession() {
+                this.showNotification('Fitur resume session dalam pengembangan', 'info');
+            }
+
+            async closeSessionDay() {
+                const selectedDate = document.getElementById('date-filter').value;
+                
+                if (confirm(`Apakah Anda yakin ingin menutup sesi sidang untuk tanggal ${selectedDate}?`)) {
+                    try {
+                        const response = await fetch(APPS_SCRIPT_URL, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                action: 'clearQueue',
+                                date: selectedDate
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            this.currentSession = null;
+                            this.showNotification(`Sesi sidang untuk tanggal ${selectedDate} telah ditutup`, 'info');
+                            this.loadQueueData();
+                        } else {
+                            throw new Error(result.error);
+                        }
+                    } catch (error) {
+                        this.showNotification('Error: ' + error.message, 'error');
+                    }
+                }
+            }
+
+            async updateStatus(queueNumber, newStatus) {
+                try {
+                    console.log(`Updating status for queue ${queueNumber} to ${newStatus}`);
+                    
+                    const response = await fetch(APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'updateStatus',
+                            queueNumber: queueNumber,
+                            status: newStatus
+                        })
                     });
                     
-                    const url = `${APPS_SCRIPT_URL}?${params.toString()}`;
-                    console.log('🟡 Request URL:', url);
-                    
-                    const response = await fetch(url);
-                    
-                    console.log('🟡 Response status:', response.status);
-                    
                     if (!response.ok) {
-                        throw new Error(`HTTP Error: ${response.status}`);
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     
                     const result = await response.json();
-                    console.log('🟢 Response dari database:', result);
+                    console.log('Update status result:', result);
                     
-                    return result;
-                    
+                    if (result.success) {
+                        this.showNotification(`Status berhasil diupdate!`);
+                        
+                        // Kirim notifikasi email jika status berubah menjadi ongoing
+                        if (newStatus === 'ongoing') {
+                            const queue = await this.getQueueForDate('all');
+                            const user = queue.find(item => item.queueNumber == queueNumber);
+                            if (user) {
+                                await this.sendSessionNotification(user, 'current');
+                            }
+                        }
+                        
+                        this.loadQueueData();
+                    } else {
+                        throw new Error(result.error);
+                    }
                 } catch (error) {
-                    console.error('🔴 Submit error:', error);
-                    throw new Error('Gagal mengirim data ke database: ' + error.message);
+                    console.error('Update status error:', error);
+                    this.showNotification('Error: ' + error.message, 'error');
                 }
             }
 
-            // Kirim email konfirmasi ke peserta
-            async sendConfirmationEmail(userData) {
-                const templateParams = {
-                    to_email: userData.email,
-                    to_name: userData.nama,
-                    queue_number: userData.queueNumber,
-                    no_perkara: userData.no_perkara,
-                    tanggal_sidang: this.formatDateForEmail(userData.tanggal_sidang),
-                    waktu_sidang: userData.waktu_sidang,
-                    alasan: userData.alasan || 'Tidak ada alasan'
+            async deleteQueueItem(queueNumber) {
+                if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
+                
+                try {
+                    console.log(`Deleting queue item ${queueNumber}`);
+                    
+                    const response = await fetch(APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'deleteQueue',
+                            queueNumber: queueNumber
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log('Delete result:', result);
+                    
+                    if (result.success) {
+                        this.showNotification(`Data berhasil dihapus!`);
+                        this.loadQueueData();
+                    } else {
+                        throw new Error(result.error);
+                    }
+                } catch (error) {
+                    console.error('Delete error:', error);
+                    this.showNotification('Error: ' + error.message, 'error');
+                }
+            }
+
+            async sendImmediateCall(queueNumber) {
+                try {
+                    // Cari data user berdasarkan queueNumber
+                    const queue = await this.getQueueForDate('all');
+                    const user = queue.find(item => item.queueNumber == queueNumber);
+                    
+                    if (user) {
+                        // Kirim notifikasi panggilan via EmailJS
+                        await this.sendCallNotification(user);
+                        
+                        this.showNotification(`Panggilan berhasil dikirim ke ${user.nama}`, 'success');
+                    } else {
+                        throw new Error('Data user tidak ditemukan');
+                    }
+                } catch (error) {
+                    console.error('Send call error:', error);
+                    this.showNotification('Error: ' + error.message, 'error');
+                }
+            }
+
+            async sendSessionNotification(user, type) {
+                if (!EMAILJS_CONFIG.PUBLIC_KEY) {
+                    console.log('EmailJS not configured, skipping email notification');
+                    return;
+                }
+
+                let templateParams = {
+                    to_email: user.email,
+                    to_name: user.nama,
+                    from_name: "Sistem Sidang Pengadilan Agama Tarutung",
+                    reply_to: EMAILJS_CONFIG.ADMIN_EMAIL,
+                    queue_number: user.queueNumber,
+                    no_perkara: user.no_perkara,
+                    tanggal_sidang: this.formatDate(user.tanggal_sidang),
+                    waktu_sidang: user.waktu_sidang
                 };
 
+                let templateId = EMAILJS_CONFIG.TEMPLATES.REMINDER;
+
+                switch(type) {
+                    case 'current':
+                        templateParams.message = `Sidang Anda sekarang dimulai. Nomor antrian: ${user.queueNumber}. Silakan segera menuju ruang sidang.`;
+                        break;
+                    case 'next':
+                        templateParams.message = `Sidang Anda akan segera dimulai. Nomor antrian: ${user.queueNumber}. Perkiraan giliran: ${user.waktu_sidang}`;
+                        break;
+                }
+
                 try {
-                    await emailjs.send(
-                        EMAILJS_CONFIG.SERVICE_ID, 
-                        EMAILJS_CONFIG.TEMPLATES.CONFIRMATION, 
-                        templateParams
-                    );
-                    console.log(`✅ Email konfirmasi berhasil dikirim ke ${userData.email}`);
+                    await emailjs.send(EMAILJS_CONFIG.SERVICE_ID, templateId, templateParams);
+                    console.log(`Email notifikasi berhasil dikirim ke ${user.email}`);
                     return true;
                 } catch (error) {
-                    console.error('❌ Error mengirim email konfirmasi:', error);
+                    console.error('Error mengirim email:', error);
                     return false;
                 }
             }
 
-            // Jadwalkan reminder 1 jam sebelum sidang
-            scheduleReminder(userData) {
-                const sidangDateTime = new Date(`${userData.tanggal_sidang}T${userData.waktu_sidang}`);
-                const reminderTime = new Date(sidangDateTime.getTime() - (60 * 60 * 1000)); // 1 jam sebelum
-                
-                const now = new Date();
-                const delay = reminderTime.getTime() - now.getTime();
-                
-                if (delay > 0) {
-                    console.log(`⏰ Reminder dijadwalkan untuk ${reminderTime}`);
-                    
-                    setTimeout(async () => {
-                        await this.sendReminderEmail(userData);
-                    }, delay);
+            async sendCallNotification(user) {
+                if (!EMAILJS_CONFIG.PUBLIC_KEY) {
+                    console.log('EmailJS not configured, skipping call notification');
+                    return;
                 }
-            }
 
-            // Kirim email reminder
-            async sendReminderEmail(userData) {
                 const templateParams = {
-                    to_email: userData.email,
-                    to_name: userData.nama,
-                    queue_number: userData.queueNumber,
-                    no_perkara: userData.no_perkara,
-                    tanggal_sidang: this.formatDateForEmail(userData.tanggal_sidang),
-                    waktu_sidang: userData.waktu_sidang,
-                    message: `Pengingat: Sidang Anda akan dimulai dalam 1 jam. Silakan datang 15 menit sebelum waktu sidang.`
+                    to_email: user.email,
+                    to_name: user.nama,
+                    from_name: "Admin Sidang",
+                    reply_to: EMAILJS_CONFIG.ADMIN_EMAIL,
+                    queue_number: user.queueNumber,
+                    no_perkara: user.no_perkara,
+                    message: "SEGERA: Anda dipanggil untuk sidang sekarang. Silakan langsung menuju ruangan sidang."
                 };
 
                 try {
                     await emailjs.send(
                         EMAILJS_CONFIG.SERVICE_ID, 
-                        EMAILJS_CONFIG.TEMPLATES.REMINDER, 
+                        EMAILJS_CONFIG.TEMPLATES.CALL_NOTIFICATION, 
                         templateParams
                     );
-                    console.log(`✅ Email reminder berhasil dikirim ke ${userData.email}`);
-                    
+                    console.log(`Panggilan mendadak berhasil dikirim ke ${user.email}`);
+                    return true;
                 } catch (error) {
-                    console.error('❌ Error mengirim email reminder:', error);
+                    console.error('Error mengirim panggilan mendadak:', error);
+                    return false;
                 }
             }
 
-            formatDateForEmail(dateString) {
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                return new Date(dateString).toLocaleDateString('id-ID', options);
+            async clearSelectedData() {
+                const selectedDate = document.getElementById('date-filter').value;
+                
+                if (selectedDate === 'all') {
+                    if (!confirm('Apakah Anda yakin ingin menghapus SEMUA data?')) return;
+                } else {
+                    if (!confirm(`Apakah Anda yakin ingin menghapus data untuk tanggal ${selectedDate}?`)) return;
+                }
+
+                try {
+                    const response = await fetch(APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            },
+                        body: JSON.stringify({
+                            action: 'clearQueue',
+                            date: selectedDate
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        this.currentSession = null;
+                        this.showNotification('Data berhasil dihapus!');
+                        this.loadQueueData();
+                    } else {
+                        throw new Error(result.error);
+                    }
+                } catch (error) {
+                    console.error('Clear data error:', error);
+                    this.showNotification('Error: ' + error.message, 'error');
+                }
             }
 
-            showReceipt(data) {
-                const receipt = document.getElementById('receipt');
-                const receiptContent = document.getElementById('receipt-content');
-                const formCard = document.querySelector('.form-card');
+            async getQueueForDate(date) {
+                try {
+                    const response = await fetch(`${APPS_SCRIPT_URL}?action=getQueue&timestamp=${Date.now()}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        const allQueue = data.data.data || data.data || [];
+                        return date === 'all' ? allQueue : allQueue.filter(item => item.tanggal_sidang === date);
+                    }
+                    return [];
+                } catch (error) {
+                    console.error('Error getting queue for date:', error);
+                    return [];
+                }
+            }
+
+            async exportToExcel() {
+                try {
+                    window.open('https://docs.google.com/spreadsheets/d/1lNjl25Jk5mmqpwj8MnsKVhPI7x9yNTJmm-JrsoXelgw/edit', '_blank');
+                } catch (error) {
+                    this.showNotification('Error membuka spreadsheet: ' + error.message, 'error');
+                }
+            }
+
+            updateDateFilter(dates) {
+                const dateFilter = document.getElementById('date-filter');
+                const currentValue = dateFilter.value;
                 
-                receiptContent.innerHTML = `
-                    <div class="receipt">
-                        <div style="text-align: center; margin-bottom: 20px;">
-                            <div class="queue-number">${data.queueNumber}</div>
-                            <div style="font-size: 1.2em; color: var(--primary);">Nomor Antrian</div>
-                        </div>
-                        
-                        <div style="display: grid; gap: 15px;">
-                            <div style="display: flex; justify-content: space-between;">
-                                <strong>Nama:</strong>
-                                <span>${data.nama}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <strong>Email:</strong>
-                                <span>${data.email}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <strong>WhatsApp:</strong>
-                                <span>${data.whatsapp}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <strong>No Perkara:</strong>
-                                <span>${data.no_perkara}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <strong>Tanggal:</strong>
-                                <span>${this.formatDate(data.tanggal_sidang)}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <strong>Waktu:</strong>
-                                <span>${data.waktu_sidang} WIB</span>
-                            </div>
-                        </div>
-                        
-                        <hr style="margin: 20px 0; border-color: #333;">
-                        
-                        <div style="text-align: center; font-size: 0.9em; color: #aaa;">
-                            <p>📧 Email konfirmasi telah dikirim ke ${data.email}</p>
-                            <p>⏰ Anda akan menerima reminder 1 jam sebelum sidang</p>
-                            <p>🕒 Silakan datang 15 menit sebelum jadwal sidang</p>
-                            <p>📍 Pengadilan Agama Tarutung</p>
-                            <p>💾 Data tersimpan di database sistem</p>
-                        </div>
-                    </div>
-                `;
+                dateFilter.innerHTML = '<option value="all">Semua Tanggal</option>';
                 
-                formCard.style.display = 'none';
-                receipt.style.display = 'block';
+                dates.forEach(date => {
+                    const option = document.createElement('option');
+                    option.value = date;
+                    option.textContent = this.formatDate(date);
+                    dateFilter.appendChild(option);
+                });
+                
+                // Pertahankan nilai yang dipilih
+                dateFilter.value = currentValue;
+
+                // Update display
+                document.getElementById('current-date-display').textContent = 
+                    currentValue === 'all' ? 'Semua Tanggal' : this.formatDate(currentValue);
             }
 
             formatDate(dateString) {
+                if (!dateString) return '-';
                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                 return new Date(dateString).toLocaleDateString('id-ID', options);
             }
 
-            showNotification(message, type) {
+            formatDateTime(dateString, timeString) {
+                if (!dateString || !timeString) return '-';
+                
+                try {
+                    // Format tanggal
+                    const date = new Date(dateString);
+                    const formattedDate = date.toLocaleDateString('id-ID', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+                    
+                    // Format waktu - ambil hanya jam dan menit saja
+                    // Hilangkan bagian detik dan timezone jika ada
+                    let cleanTime = timeString;
+                    
+                    // Jika waktu mengandung format yang tidak normal, ambil hanya bagian jam:menit
+                    if (timeString.includes('T') || timeString.includes('Z')) {
+                        // Ini adalah format ISO, ambil hanya jam:menit
+                        const timeParts = timeString.split('T')[1]?.split(':') || timeString.split(':');
+                        cleanTime = `${timeParts[0]}:${timeParts[1]}`;
+                    } else if (timeString.includes(' ')) {
+                        // Jika ada spasi, ambil bagian pertama
+                        cleanTime = timeString.split(' ')[0];
+                    }
+                    
+                    // Pastikan format HH:MM
+                    const timeParts = cleanTime.split(':');
+                    if (timeParts.length >= 2) {
+                        cleanTime = `${timeParts[0].padStart(2, '0')}:${timeParts[1].padStart(2, '0')}`;
+                    }
+                    
+                    return `${formattedDate} ${cleanTime}`;
+                } catch (error) {
+                    console.error('Error formatting date/time:', error);
+                    // Fallback: tampilkan waktu asli jika parsing gagal
+                    return `${dateString} ${timeString}`;
+                }
+            }
+
+            getStatusText(status) {
+                const statusMap = {
+                    'waiting': 'Menunggu',
+                    'ongoing': 'Berlangsung',
+                    'completed': 'Selesai',
+                    'menunggu': 'Menunggu',
+                    'sedang_berlangsung': 'Berlangsung',
+                    'selesai': 'Selesai'
+                };
+                return statusMap[status] || 'Menunggu';
+            }
+
+            showLoading() {
+                const tbody = document.getElementById('queue-table-body');
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;"><div class="loading"></div> Memuat data...</td></tr>';
+            }
+
+            showNotification(message, type = 'success') {
                 const notification = document.getElementById('notification');
                 notification.textContent = message;
                 notification.className = `notification ${type} show`;
@@ -834,11 +810,22 @@
                     notification.classList.remove('show');
                 }, 5000);
             }
+
+            startAutoRefresh() {
+                // Refresh data setiap 10 detik
+                setInterval(() => {
+                    this.loadQueueData();
+                }, 10000);
+            }
         }
+
+        // Global instance
+        let adminSystem;
 
         // Initialize application
         document.addEventListener('DOMContentLoaded', function() {
-            new PendaftaranSystem();
+            createParticles();
+            adminSystem = new AdminSystem();
         });
     </script>
 </body>
