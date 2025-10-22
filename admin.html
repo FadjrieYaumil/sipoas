@@ -618,12 +618,10 @@
                 font-size: 0.8rem;
             }
             
-            .data-table th:nth-child(4),
             .data-table th:nth-child(5),
-            .data-table th:nth-child(7),
-            .data-table td:nth-child(4),
+            .data-table th:nth-child(6),
             .data-table td:nth-child(5),
-            .data-table td:nth-child(7) {
+            .data-table td:nth-child(6) {
                 display: none;
             }
             
@@ -773,15 +771,14 @@
                         <th>Nama</th>
                         <th>No Perkara</th>
                         <th>WhatsApp</th>
-                        <th>Tanggal</th>
-                        <th>Waktu</th>
+                        <th>Tanggal & Waktu Sidang</th>
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="queue-table-body">
                     <tr>
-                        <td colspan="8" style="text-align: center;">
+                        <td colspan="7" style="text-align: center;">
                             <div class="loading"></div> Memuat data...
                         </td>
                     </tr>
@@ -960,7 +957,7 @@
                     : queue.filter(item => item.tanggal_sidang === selectedDate);
                 
                 if (filteredQueue.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Tidak ada data untuk tanggal ini</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Tidak ada data untuk tanggal ini</td></tr>';
                     return;
                 }
 
@@ -983,8 +980,7 @@
                             <td>${item.nama || '-'}</td>
                             <td>${item.no_perkara || '-'}</td>
                             <td>${item.whatsapp || '-'}</td>
-                            <td>${item.tanggal_sidang || '-'}</td>
-                            <td>${item.waktu_sidang || '-'}</td>
+                            <td>${this.formatDateTime(item.tanggal_sidang, item.waktu_sidang)}</td>
                             <td><span class="status-badge status-${item.status || 'waiting'}">${this.getStatusText(item.status)}</span></td>
                             <td>
                                 <button class="btn-call" onclick="adminSystem.sendImmediateCall(${item.queueNumber || 0})">
@@ -1058,8 +1054,7 @@
                         <p><strong>Email:</strong> ${this.currentSession.email}</p>
                         <p><strong>WhatsApp:</strong> ${this.currentSession.whatsapp}</p>
                         <p><strong>Nomor Antrian:</strong> ${this.currentSession.queueNumber}</p>
-                        <p><strong>Tanggal Sidang:</strong> ${this.currentSession.tanggal_sidang}</p>
-                        <p><strong>Waktu Sidang:</strong> ${this.currentSession.waktu_sidang}</p>
+                        <p><strong>Tanggal & Waktu Sidang:</strong> ${this.formatDateTime(this.currentSession.tanggal_sidang, this.currentSession.waktu_sidang)}</p>
                         <p><strong>Alasan:</strong> ${this.currentSession.alasan || 'Tidak ada alasan'}</p>
                         <p><strong>Waktu Mulai:</strong> ${new Date().toLocaleTimeString()}</p>
                     `;
@@ -1491,6 +1486,28 @@
                 return new Date(dateString).toLocaleDateString('id-ID', options);
             }
 
+            formatDateTime(dateString, timeString) {
+                if (!dateString || !timeString) return '-';
+                
+                try {
+                    // Format tanggal
+                    const date = new Date(dateString);
+                    const formattedDate = date.toLocaleDateString('id-ID', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+                    
+                    // Format waktu (hilangkan detik jika ada)
+                    const formattedTime = timeString.split(':').slice(0, 2).join(':');
+                    
+                    return `${formattedDate} ${formattedTime}`;
+                } catch (error) {
+                    console.error('Error formatting date/time:', error);
+                    return `${dateString} ${timeString}`;
+                }
+            }
+
             getStatusText(status) {
                 const statusMap = {
                     'waiting': 'Menunggu',
@@ -1505,7 +1522,7 @@
 
             showLoading() {
                 const tbody = document.getElementById('queue-table-body');
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;"><div class="loading"></div> Memuat data...</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;"><div class="loading"></div> Memuat data...</td></tr>';
             }
 
             showNotification(message, type = 'success') {
