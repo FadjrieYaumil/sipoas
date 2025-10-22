@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SI-POAS - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        :root {
+            --primary: #00FF00;
+            --primary-dark: #8bc926;
+            --primary-light: #e8ffb6;
+            --secondary: #000000;
+            --accent: #e53935;
+            --success: #00FF00;
+            --warning: #ff9800;
+            --dark-bg: #121212;
+            --card-dark: #1e1e1e;
+            --text-light: #f5f5f5;
+            --text-muted: #aaaaaa;
+            --gray: #666;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 50%, rgba(178, 255, 31, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 20%, rgba(178, 255, 31, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .admin-controls-top {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .btn-close-session {
+            background: linear-gradient(135deg, var(--accent), #c62828);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-close-session:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(229, 57, 53, 0.3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .logo img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+        }
+
+        .logo-text {
+            text-align: center;
+        }
+
+        .logo h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .logo .subtitle {
+            font-size: 1rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .admin-card {
+            background: linear-gradient(135deg, var(--card-dark) 0%, #2a2a2a 100%);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .admin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .admin-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #e53935;
+            color: white;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--secondary);
+            border: none;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-action::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-action:hover::before {
+            left: 100%;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 255, 0, 0.3);
+        }
+
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-action:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent), #c62828);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 8px 20px rgba(229, 57, 53, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #388e3c);
+            color: white;
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #f57c00);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            box-shadow: 0 8px 20px rgba(255, 152, 0, 0.3);
+        }
+
+        .date-filter {
+            margin-bottom: 20px;
+            background: rgba(0, 255, 0, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .date-filter select {
+            background: var(--card-dark);
+            color: var(--text-light);
+            border: 2px solid var(--primary);
+            padding: 8px 15px;
+            border-radius: 8px;
+            margin-left: 10px;
+            font-size: 1rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .data-table:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--secondary);
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .data-table tr:hover {
+            background-color: rgba(0, 255, 0, 0.1);
+            transform: scale(1.01);
+        }
+
+        .current-session {
+            background: rgba(0, 255, 0, 0.2) !important;
+            border-left: 4px solid var(--primary);
+            animation: highlight 2s infinite;
+        }
+
+        @keyframes highlight {
+            0% { background-color: rgba(0, 255, 0, 0.2); }
+            50% { background-color: rgba(0, 255, 0, 0.3); }
+            100% { background-color: rgba(0, 255, 0, 0.2); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 350px;
+            backdrop-filter: blur(10px);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--secondary);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, var(--accent), #c62828);
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+        }
+
+        .session-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .completion-options {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+        }
+
+        .completion-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .completion-option:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .completion-option.selected {
+            background: var(--primary);
+            color: var(--secondary);
+        }
+
+        .completion-option input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-waiting {
+            background: rgba(255,193,7,0.2);
+            color: #ffc107;
+        }
+
+        .status-ongoing {
+            background: rgba(0,255,0,0.2);
+            color: var(--primary);
+        }
+
+        .status-completed {
+            background: rgba(76,175,80,0.2);
+            color: var(--success);
+        }
+
+        .status-incomplete {
+            background: rgba(244,67,54,0.2);
+            color: #f44336;
+        }
+
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .btn-call {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-call:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+        }
+
+        .admin-controls-left {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .btn-resume-session {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-resume-session:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: floatParticle 15s infinite linear;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+
+        .description-cell {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .description-cell:hover {
+            white-space: normal;
+            overflow: visible;
+            background: var(--card-dark);
+            position: relative;
+            z-index: 10;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                margin-bottom: 20px;
+                padding: 15px;
+            }
+            
+            .admin-controls-top {
+                position: static;
+                margin-bottom: 15px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .admin-controls-left {
+                position: static;
+                margin-bottom: 15px;
+            }
+            
+            .btn-close-session, .btn-resume-session {
+                width: 100%;
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .logo {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .logo img {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .logo h1 {
+                font-size: 1.6rem;
+            }
+            
+            .admin-card {
+                padding: 25px;
+                border-radius: 16px;
+                margin-bottom: 20px;
+            }
+            
+            .session-controls {
+                flex-direction: column;
+                gap: 10px;
+                margin: 20px 0;
+            }
+            
+            .completion-options {
+                flex-direction: column;
+                gap: 10px;
+                margin: 15px 0;
+                padding: 15px;
+            }
+            
+            .data-table {
+                font-size: 0.85rem;
+                margin-top: 15px;
+            }
+            
+            .data-table th, .data-table td {
+                padding: 10px 8px;
+                font-size: 0.8rem;
+            }
+            
+            .data-table th:nth-child(4),
+            .data-table th:nth-child(5),
+            .data-table th:nth-child(7),
+            .data-table td:nth-child(4),
+            .data-table td:nth-child(5),
+            .data-table td:nth-child(7) {
+                display: none;
+            }
+            
+            .notification {
+                right: 15px;
+                left: 15px;
+                max-width: none;
+                text-align: center;
+            }
+
+            .date-filter {
+                padding: 10px;
+            }
+            
+            .date-filter select {
+                width: 100%;
+                margin: 10px 0 0 0;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle Background -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Notifications -->
+    <div id="notification" class="notification"></div>
+
+    <div class="container">
+        <div class="header floating-element">
+            <div class="admin-controls-left" id="admin-controls-left" style="display: none;">
+                <button class="btn-close-session" id="clear-queue">
+                    <i class="fas fa-trash"></i> Hapus Antrian Sidang
+                </button>
+            </div>
+            <div class="logo">
+                <img src="logo.jpeg" alt="Logo Pengadilan">
+                <div class="logo-text">
+                    <h1>SI-POAS - Admin Panel</h1>
+                    <p class="subtitle">Sistem Pendaftaran Online Antrian Sidang</p>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 5px;">Pengadilan Agama Tarutung</p>
+                </div>
+            </div>
+            <div class="admin-controls-top" id="admin-controls-top" style="display: none;">
+                <button class="btn-resume-session" id="resume-session" style="display: none;">
+                    <i class="fas fa-play"></i> Lanjutkan Sidang
+                </button>
+                <button class="btn-close-session" id="end-session-day">
+                    <i class="fas fa-times"></i> Akhiri Sidang Hari Ini
+                </button>
+            </div>
+        </div>
+
+        <div class="admin-card floating-element">
+            <h2 style="text-align: center; margin-bottom: 30px;">Panel Admin - Manajemen Sidang</h2>
+            
+            <!-- Date Filter -->
+            <div class="date-filter">
+                <strong>Tanggal Sidang:</strong>
+                <select id="date-filter">
+                    <option value="all">Semua Tanggal</option>
+                </select>
+            </div>
+            
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn" id="refresh-btn">
+                    <i class="fas fa-sync"></i> Refresh Data
+                </button>
+                <button class="btn btn-success" id="export-btn">
+                    <i class="fas fa-download"></i> Export Excel
+                </button>
+                <button class="btn btn-danger" id="clear-queue-btn">
+                    <i class="fas fa-trash"></i> Hapus Data Terpilih
+                </button>
+            </div>
+
+            <!-- Statistics -->
+            <div class="stats" id="stats-container">
+                <div class="stat-card">
+                    <div>Total Pendaftar</div>
+                    <div class="stat-number" id="total-count">0</div>
+                    <div>Orang</div>
+                </div>
+                <div class="stat-card">
+                    <div>Menunggu</div>
+                    <div class="stat-number" id="waiting-count">0</div>
+                    <div>Sidang</div>
+                </div>
+                <div class="stat-card">
+                    <div>Berlangsung</div>
+                    <div class="stat-number" id="ongoing-count">0</div>
+                    <div>Sidang</div>
+                </div>
+                <div class="stat-card">
+                    <div>Selesai</div>
+                    <div class="stat-number" id="completed-count">0</div>
+                    <div>Sidang</div>
+                </div>
+            </div>
+
+            <!-- Current Session -->
+            <div id="current-session" style="display: none;">
+                <h3 style="margin-bottom: 20px; color: var(--primary);">Sidang Berlangsung</h3>
+                <div id="session-details" style="background: rgba(0, 255, 0, 0.1); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <!-- Session details will be filled by JavaScript -->
+                </div>
+                
+                <div class="completion-options">
+                    <div class="completion-option" id="option-completed">
+                        <input type="radio" name="completion" value="completed">
+                        <label>Sidang Selesai</label>
+                    </div>
+                    <div class="completion-option" id="option-incomplete">
+                        <input type="radio" name="completion" value="incomplete">
+                        <label>Sidang Belum Selesai</label>
+                    </div>
+                </div>
+                
+                <div class="session-controls">
+                    <button class="btn-action btn-danger" id="end-session" disabled>
+                        <i class="fas fa-pause"></i> Akhiri Sidang
+                    </button>
+                    <button class="btn-action btn-success" id="next-session" disabled>
+                        <i class="fas fa-forward"></i> Sidang Selanjutnya
+                    </button>
+                </div>
+            </div>
+
+            <!-- Start Session Button -->
+            <div id="start-session-control" style="text-align: center; margin: 30px 0;">
+                <button class="btn-action" id="start-session">
+                    <i class="fas fa-play"></i> Mulai Sidang
+                </button>
+            </div>
+
+            <!-- Queue List -->
+            <h3 style="margin: 30px 0 20px 0;">Daftar Antrian Sidang - <span id="current-date-display"></span></h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>No Antrian</th>
+                        <th>Nama</th>
+                        <th>No Perkara</th>
+                        <th>WhatsApp</th>
+                        <th>Tanggal</th>
+                        <th>Waktu</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="queue-table-body">
+                    <tr>
+                        <td colspan="8" style="text-align: center;">
+                            <div class="loading"></div> Memuat data...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // ================================
+        // KONFIGURASI
+        // ================================
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwhq1vcAWtABl4UHDrkPiwlIaaIPMHDWgJhO6nL6Nnx0Rl7MLnICWrgNe5N3A0VBx9n/exec';
+        
+        // Konfigurasi EmailJS
+        const EMAILJS_CONFIG = {
+            PUBLIC_KEY: "HCCzIO1iChSuIxGgk",
+            SERVICE_ID: "service_h3zxr5q",
+            TEMPLATES: {
+                CONFIRMATION: "template_5jvzx2f",
+                REMINDER: "template_c18nu1t",
+                CALL_NOTIFICATION: "template_c18nu1t"
+            },
+            ADMIN_EMAIL: "protocoltype01@gmail.com"
+        };
+
+        // Inisialisasi EmailJS
+        if (EMAILJS_CONFIG.PUBLIC_KEY) {
+            emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+        }
+
+        // Particle Background
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const size = Math.random() * 20 + 5;
+                const left = Math.random() * 100;
+                const animationDuration = Math.random() * 20 + 10;
+                const animationDelay = Math.random() * 5;
+                const opacity = Math.random() * 0.1 + 0.05;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${left}%`;
+                particle.style.animationDuration = `${animationDuration}s`;
+                particle.style.animationDelay = `${animationDelay}s`;
+                particle.style.opacity = opacity;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        class AdminSystem {
+            constructor() {
+                this.currentSession = null;
+                this.selectedCompletion = null;
+                this.isLoading = false;
+                this.initializeEventListeners();
+                this.loadQueueData();
+                this.startAutoRefresh();
+            }
+
+            initializeEventListeners() {    
+                document.getElementById('refresh-btn').addEventListener('click', () => {
+                    this.loadQueueData();
+                });
+
+                document.getElementById('clear-queue-btn').addEventListener('click', () => {
+                    this.clearSelectedData();
+                });
+
+                document.getElementById('export-btn').addEventListener('click', () => {
+                    this.exportToExcel();
+                });
+
+                document.getElementById('date-filter').addEventListener('change', () => {
+                    this.loadQueueData();
+                });
+
+                // Session controls
+                document.getElementById('start-session').addEventListener('click', () => {
+                    this.startSession();
+                });
+
+                document.getElementById('next-session').addEventListener('click', () => {
+                    this.nextSession();
+                });
+
+                document.getElementById('end-session').addEventListener('click', () => {
+                    this.endSession();
+                });
+
+                document.getElementById('end-session-day').addEventListener('click', () => {
+                    this.closeSessionDay();
+                });
+
+                document.getElementById('resume-session').addEventListener('click', () => {
+                    this.resumeSession();
+                });
+
+                document.getElementById('clear-queue').addEventListener('click', () => {
+                    this.clearSelectedData();
+                });
+
+                // Completion options
+                document.querySelectorAll('.completion-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        document.querySelectorAll('.completion-option').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        option.classList.add('selected');
+                        
+                        const radio = option.querySelector('input[type="radio"]');
+                        radio.checked = true;
+                        this.selectedCompletion = radio.value;
+                        
+                        // Aktifkan tombol aksi
+                        document.getElementById('end-session').disabled = false;
+                        document.getElementById('next-session').disabled = false;
+                    });
+                });
+            }
+
+            async loadQueueData() {
+                if (this.isLoading) return;
+                
+                try {
+                    this.isLoading = true;
+                    this.showLoading();
+                    console.log('Loading queue data...');
+                    
+                    const response = await fetch(`${APPS_SCRIPT_URL}?action=getQueue&timestamp=${Date.now()}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Data received:', data);
+                    
+                    if (data.success) {
+                        const queueData = data.data.data || data.data || [];
+                        const dates = data.data.dates || [];
+                        
+                        console.log('Queue data:', queueData);
+                        console.log('Dates:', dates);
+                        
+                        this.displayQueueData(queueData);
+                        this.updateStatistics(queueData);
+                        this.updateDateFilter(dates);
+                        this.updateSessionInfo(queueData);
+                    } else {
+                        throw new Error(data.error || 'Unknown error');
+                    }
+                } catch (error) {
+                    console.error('Load data error:', error);
+                    this.showNotification('Error memuat data: ' + error.message, 'error');
+                    this.displayQueueData([]);
+                } finally {
+                    this.isLoading = false;
+                }
+            }
+
+            displayQueueData(queue) {
+                const tbody = document.getElementById('queue-table-body');
+                const selectedDate = document.getElementById('date-filter').value;
+                
+                // Filter berdasarkan tanggal
+                const filteredQueue = selectedDate === 'all' 
+                    ? queue 
+                    : queue.filter(item => item.tanggal_sidang === selectedDate);
+                
+                if (filteredQueue.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Tidak ada data untuk tanggal ini</td></tr>';
+                    return;
+                }
+
+                // Urutkan berdasarkan waktu sidang
+                const sortedQueue = [...filteredQueue].sort((a, b) => {
+                    const timeOrder = {
+                        '09:00': 1, '10:00': 2, '11:00': 3, 
+                        '12:00': 4, '13:00': 5, '14:00': 6
+                    };
+                    return (timeOrder[a.waktu_sidang] || 0) - (timeOrder[b.waktu_sidang] || 0);
+                });
+
+                tbody.innerHTML = sortedQueue.map(item => {
+                    const isCurrentSession = this.currentSession && this.currentSession.queueNumber === item.queueNumber;
+                    const rowClass = isCurrentSession ? 'current-session' : '';
+                    
+                    return `
+                        <tr class="${rowClass}">
+                            <td><strong>${item.queueNumber || '-'}</strong></td>
+                            <td>${item.nama || '-'}</td>
+                            <td>${item.no_perkara || '-'}</td>
+                            <td>${item.whatsapp || '-'}</td>
+                            <td>${item.tanggal_sidang || '-'}</td>
+                            <td>${item.waktu_sidang || '-'}</td>
+                            <td><span class="status-badge status-${item.status || 'waiting'}">${this.getStatusText(item.status)}</span></td>
+                            <td>
+                                <button class="btn-call" onclick="adminSystem.sendImmediateCall(${item.queueNumber || 0})">
+                                    <i class="fas fa-bell"></i> Panggil
+                                </button>
+                                <button class="btn" onclick="adminSystem.updateStatus(${item.queueNumber || 0}, 'ongoing')" 
+                                        ${(item.status === 'ongoing' || item.status === 'completed') ? 'disabled' : ''}>
+                                    Mulai
+                                </button>
+                                <button class="btn btn-success" onclick="adminSystem.updateStatus(${item.queueNumber || 0}, 'completed')"
+                                        ${item.status === 'completed' ? 'disabled' : ''}>
+                                    Selesai
+                                </button>
+                                <button class="btn btn-danger" onclick="adminSystem.deleteQueueItem(${item.queueNumber || 0})">
+                                    <i class="fas fa-trash"></i> Hapus
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            updateStatistics(queue) {
+                const selectedDate = document.getElementById('date-filter').value;
+                const filteredQueue = selectedDate === 'all' 
+                    ? queue 
+                    : queue.filter(item => item.tanggal_sidang === selectedDate);
+
+                const total = filteredQueue.length;
+                const waiting = filteredQueue.filter(item => item.status === 'waiting' || !item.status).length;
+                const ongoing = filteredQueue.filter(item => item.status === 'ongoing').length;
+                const completed = filteredQueue.filter(item => item.status === 'completed').length;
+
+                document.getElementById('total-count').textContent = total;
+                document.getElementById('waiting-count').textContent = waiting;
+                document.getElementById('ongoing-count').textContent = ongoing;
+                document.getElementById('completed-count').textContent = completed;
+            }
+
+            updateSessionInfo(queue) {
+                const currentSessionDiv = document.getElementById('current-session');
+                const startSessionControl = document.getElementById('start-session-control');
+                const resumeButton = document.getElementById('resume-session');
+                const adminControlsTop = document.getElementById('admin-controls-top');
+                const adminControlsLeft = document.getElementById('admin-controls-left');
+
+                const selectedDate = document.getElementById('date-filter').value;
+                const filteredQueue = selectedDate === 'all' 
+                    ? queue 
+                    : queue.filter(item => item.tanggal_sidang === selectedDate);
+
+                // Tampilkan kontrol admin jika ada data
+                if (filteredQueue.length > 0) {
+                    adminControlsTop.style.display = 'block';
+                    adminControlsLeft.style.display = 'block';
+                } else {
+                    adminControlsTop.style.display = 'none';
+                    adminControlsLeft.style.display = 'none';
+                }
+
+                // Cari sesi yang sedang berlangsung
+                const ongoingSession = filteredQueue.find(item => item.status === 'ongoing');
+                if (ongoingSession) {
+                    this.currentSession = ongoingSession;
+                }
+
+                if (this.currentSession) {
+                    document.getElementById('session-details').innerHTML = `
+                        <h4>${this.currentSession.nama}</h4>
+                        <p><strong>No Perkara:</strong> ${this.currentSession.no_perkara}</p>
+                        <p><strong>Email:</strong> ${this.currentSession.email}</p>
+                        <p><strong>WhatsApp:</strong> ${this.currentSession.whatsapp}</p>
+                        <p><strong>Nomor Antrian:</strong> ${this.currentSession.queueNumber}</p>
+                        <p><strong>Tanggal Sidang:</strong> ${this.currentSession.tanggal_sidang}</p>
+                        <p><strong>Waktu Sidang:</strong> ${this.currentSession.waktu_sidang}</p>
+                        <p><strong>Alasan:</strong> ${this.currentSession.alasan || 'Tidak ada alasan'}</p>
+                        <p><strong>Waktu Mulai:</strong> ${new Date().toLocaleTimeString()}</p>
+                    `;
+                    currentSessionDiv.style.display = 'block';
+                    startSessionControl.style.display = 'none';
+                    resumeButton.style.display = 'none';
+                } else {
+                    currentSessionDiv.style.display = 'none';
+                    startSessionControl.style.display = 'block';
+                    resumeButton.style.display = 'none';
+                }
+            }
+
+            async startSession() {
+                try {
+                    const selectedDate = document.getElementById('date-filter').value;
+                    const queue = await this.getQueueForDate(selectedDate);
+                    const pendingQueue = queue.filter(item => 
+                        (item.status === 'waiting' || !item.status) && 
+                        item.tanggal_sidang === selectedDate
+                    );
+                    
+                    if (pendingQueue.length === 0) {
+                        this.showNotification('Tidak ada antrian yang menunggu untuk tanggal ini', 'error');
+                        return;
+                    }
+
+                    // Ambil peserta pertama yang menunggu
+                    const nextUser = pendingQueue[0];
+                    
+                    // Update status ke ongoing terlebih dahulu
+                    await this.updateStatus(nextUser.queueNumber, 'ongoing');
+                    
+                    // Set current session setelah update berhasil
+                    this.currentSession = {
+                        ...nextUser,
+                        startTime: new Date().toISOString()
+                    };
+
+                    // Kirim notifikasi email ke user
+                    await this.sendSessionNotification(nextUser, 'current');
+
+                    this.showNotification(`Sidang dimulai untuk: ${nextUser.nama}`, 'success');
+                    this.loadQueueData();
+                    
+                } catch (error) {
+                    this.showNotification('Error: ' + error.message, 'error');
+                }
+            }
+
+            async nextSession() {
+                if (!this.selectedCompletion) {
+                    this.showNotification('Pilih status penyelesaian sidang terlebih dahulu.', 'error');
+                    return;
+                }
+
+                try {
+                    const isCompleted = this.selectedCompletion === 'completed';
+                    
+                    // Selesaikan sesi saat ini
+                    if (this.currentSession) {
+                        await this.updateStatus(this.currentSession.queueNumber, isCompleted ? 'completed' : 'waiting');
+                    }
+
+                    // Cari peserta berikutnya
+                    const selectedDate = document.getElementById('date-filter').value;
+                    const queue = await this.getQueueForDate(selectedDate);
+                    const pendingQueue = queue.filter(item => 
+                        (item.status === 'waiting' || !item.status) && 
+                        item.tanggal_sidang === selectedDate
+                    );
+                    
+                    if (pendingQueue.length > 0) {
+                        const nextUser = pendingQueue[0];
+                        
+                        // Update status ke ongoing terlebih dahulu
+                        await this.updateStatus(nextUser.queueNumber, 'ongoing');
+                        
+                        // Set current session setelah update berhasil
+                        this.currentSession = {
+                            ...nextUser,
+                            startTime: new Date().toISOString()
+                        };
+                        
+                        // Kirim notifikasi email ke user
+                        await this.sendSessionNotification(nextUser, 'current');
+                        
+                        this.showNotification(`Berhasil pindah ke sidang berikutnya: ${nextUser.nama}`, 'success');
+                    } else {
+                        this.currentSession = null;
+                        this.showNotification('Semua sidang untuk tanggal ini telah selesai', 'info');
+                    }
+                    
+                    // Reset selection
+                    this.selectedCompletion = null;
+                    document.querySelectorAll('.completion-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                        opt.querySelector('input[type="radio"]').checked = false;
+                    });
+                    document.getElementById('end-session').disabled = true;
+                    document.getElementById('next-session').disabled = true;
+                    
+                    this.loadQueueData();
+                    
+                } catch (error) {
+                    this.showNotification('Error: ' + error.message, 'error');
+                }
+            }
+
+            async endSession() {
+                if (!this.selectedCompletion) {
+                    this.showNotification('Pilih status penyelesaian sidang terlebih dahulu.', 'error');
+                    return;
+                }
+
+                try {
+                    const isCompleted = this.selectedCompletion === 'completed';
+                    
+                    if (this.currentSession) {
+                        await this.updateStatus(this.currentSession.queueNumber, isCompleted ? 'completed' : 'waiting');
+                        this.currentSession = null;
+                        this.showNotification('Sidang diakhiri', 'info');
+                    }
+                    
+                    // Reset selection
+                    this.selectedCompletion = null;
+                    document.querySelectorAll('.completion-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                        opt.querySelector('input[type="radio"]').checked = false;
+                    });
+                    document.getElementById('end-session').disabled = true;
+                    document.getElementById('next-session').disabled = true;
+                    
+                    this.loadQueueData();
+                    
+                } catch (error) {
+                    this.showNotification('Error: ' + error.message, 'error');
+                }
+            }
+
+            async resumeSession() {
+                this.showNotification('Fitur resume session dalam pengembangan', 'info');
+            }
+
+            async closeSessionDay() {
+                const selectedDate = document.getElementById('date-filter').value;
+                
+                if (confirm(`Apakah Anda yakin ingin menutup sesi sidang untuk tanggal ${selectedDate}?`)) {
+                    try {
+                        const response = await fetch(APPS_SCRIPT_URL, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                action: 'clearQueue',
+                                date: selectedDate
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            this.currentSession = null;
+                            this.showNotification(`Sesi sidang untuk tanggal ${selectedDate} telah ditutup`, 'info');
+                            this.loadQueueData();
+                        } else {
+                            throw new Error(result.error);
+                        }
+                    } catch (error) {
+                        this.showNotification('Error: ' + error.message, 'error');
+                    }
+                }
+            }
+
+            async updateStatus(queueNumber, newStatus) {
+                try {
+                    console.log(`Updating status for queue ${queueNumber} to ${newStatus}`);
+                    
+                    const response = await fetch(APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'updateStatus',
+                            queueNumber: queueNumber,
+                            status: newStatus
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log('Update status result:', result);
+                    
+                    if (result.success) {
+                        this.showNotification(`Status berhasil diupdate!`);
+                        
+                        // Kirim notifikasi email jika status berubah menjadi ongoing
+                        if (newStatus === 'ongoing') {
+                            const queue = await this.getQueueForDate('all');
+                            const user = queue.find(item => item.queueNumber == queueNumber);
+                            if (user) {
+                                await this.sendSessionNotification(user, 'current');
+                            }
+                        }
+                        
+                        this.loadQueueData();
+                    } else {
+                        throw new Error(result.error);
+                    }
+                } catch (error) {
+                    console.error('Update status error:', error);
+                    this.showNotification('Error: ' + error.message, 'error');
+                }
+            }
+
+            async deleteQueueItem(queueNumber) {
+                if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
+                
+                try {
+                    console.log(`Deleting queue item ${queueNumber}`);
+                    
+                    const response = await fetch(APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'deleteQueue',
+                            queueNumber: queueNumber
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log('Delete result:', result);
+                    
+                    if (result.success) {
+                        this.showNotification(`Data berhasil dihapus!`);
+                        this.loadQueueData();
+                    } else {
+                        throw new Error(result.error);
+                    }
+                } catch (error) {
+                    console.error('Delete error:', error);
+                    this.showNotification('Error: ' + error.message, 'error');
+                }
+            }
+
+            async sendImmediateCall(queueNumber) {
+                try {
+                    // Cari data user berdasarkan queueNumber
+                    const queue = await this.getQueueForDate('all');
+                    const user = queue.find(item => item.queueNumber == queueNumber);
+                    
+                    if (user) {
+                        // Kirim notifikasi panggilan via EmailJS
+                        await this.sendCallNotification(user);
+                        
+                        this.showNotification(`Panggilan berhasil dikirim ke ${user.nama}`, 'success');
+                    } else {
+                        throw new Error('Data user tidak ditemukan');
+                    }
+                } catch (error) {
+                    console.error('Send call error:', error);
+                    this.showNotification('Error: ' + error.message, 'error');
+                }
+            }
+
+            async sendSessionNotification(user, type) {
+                if (!EMAILJS_CONFIG.PUBLIC_KEY) {
+                    console.log('EmailJS not configured, skipping email notification');
+                    return;
+                }
+
+                let templateParams = {
+                    to_email: user.email,
+                    to_name: user.nama,
+                    from_name: "Sistem Sidang Pengadilan Agama Tarutung",
+                    reply_to: EMAILJS_CONFIG.ADMIN_EMAIL,
+                    queue_number: user.queueNumber,
+                    no_perkara: user.no_perkara,
+                    tanggal_sidang: this.formatDate(user.tanggal_sidang),
+                    waktu_sidang: user.waktu_sidang
+                };
+
+                let templateId = EMAILJS_CONFIG.TEMPLATES.REMINDER;
+
+                switch(type) {
+                    case 'current':
+                        templateParams.message = `Sidang Anda sekarang dimulai. Nomor antrian: ${user.queueNumber}. Silakan segera menuju ruang sidang.`;
+                        break;
+                    case 'next':
+                        templateParams.message = `Sidang Anda akan segera dimulai. Nomor antrian: ${user.queueNumber}. Perkiraan giliran: ${user.waktu_sidang}`;
+                        break;
+                }
+
+                try {
+                    await emailjs.send(EMAILJS_CONFIG.SERVICE_ID, templateId, templateParams);
+                    console.log(`Email notifikasi berhasil dikirim ke ${user.email}`);
+                    return true;
+                } catch (error) {
+                    console.error('Error mengirim email:', error);
+                    return false;
+                }
+            }
+
+            async sendCallNotification(user) {
+                if (!EMAILJS_CONFIG.PUBLIC_KEY) {
+                    console.log('EmailJS not configured, skipping call notification');
+                    return;
+                }
+
+                const templateParams = {
+                    to_email: user.email,
+                    to_name: user.nama,
+                    from_name: "Admin Sidang",
+                    reply_to: EMAILJS_CONFIG.ADMIN_EMAIL,
+                    queue_number: user.queueNumber,
+                    no_perkara: user.no_perkara,
+                    message: "SEGERA: Anda dipanggil untuk sidang sekarang. Silakan langsung menuju ruangan sidang."
+                };
+
+                try {
+                    await emailjs.send(
+                        EMAILJS_CONFIG.SERVICE_ID, 
+                        EMAILJS_CONFIG.TEMPLATES.CALL_NOTIFICATION, 
+                        templateParams
+                    );
+                    console.log(`Panggilan mendadak berhasil dikirim ke ${user.email}`);
+                    return true;
+                } catch (error) {
+                    console.error('Error mengirim panggilan mendadak:', error);
+                    return false;
+                }
+            }
+
+            async clearSelectedData() {
+                const selectedDate = document.getElementById('date-filter').value;
+                
+                if (selectedDate === 'all') {
+                    if (!confirm('Apakah Anda yakin ingin menghapus SEMUA data?')) return;
+                } else {
+                    if (!confirm(`Apakah Anda yakin ingin menghapus data untuk tanggal ${selectedDate}?`)) return;
+                }
+
+                try {
+                    const response = await fetch(APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            },
+                        body: JSON.stringify({
+                            action: 'clearQueue',
+                            date: selectedDate
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        this.currentSession = null;
+                        this.showNotification('Data berhasil dihapus!');
+                        this.loadQueueData();
+                    } else {
+                        throw new Error(result.error);
+                    }
+                } catch (error) {
+                    console.error('Clear data error:', error);
+                    this.showNotification('Error: ' + error.message, 'error');
+                }
+            }
+
+            async getQueueForDate(date) {
+                try {
+                    const response = await fetch(`${APPS_SCRIPT_URL}?action=getQueue&timestamp=${Date.now()}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        const allQueue = data.data.data || data.data || [];
+                        return date === 'all' ? allQueue : allQueue.filter(item => item.tanggal_sidang === date);
+                    }
+                    return [];
+                } catch (error) {
+                    console.error('Error getting queue for date:', error);
+                    return [];
+                }
+            }
+
+            async exportToExcel() {
+                try {
+                    window.open('https://docs.google.com/spreadsheets/d/1lNjl25Jk5mmqpwj8MnsKVhPI7x9yNTJmm-JrsoXelgw/edit', '_blank');
+                } catch (error) {
+                    this.showNotification('Error membuka spreadsheet: ' + error.message, 'error');
+                }
+            }
+
+            updateDateFilter(dates) {
+                const dateFilter = document.getElementById('date-filter');
+                const currentValue = dateFilter.value;
+                
+                dateFilter.innerHTML = '<option value="all">Semua Tanggal</option>';
+                
+                dates.forEach(date => {
+                    const option = document.createElement('option');
+                    option.value = date;
+                    option.textContent = this.formatDate(date);
+                    dateFilter.appendChild(option);
+                });
+                
+                // Pertahankan nilai yang dipilih
+                dateFilter.value = currentValue;
+
+                // Update display
+                document.getElementById('current-date-display').textContent = 
+                    currentValue === 'all' ? 'Semua Tanggal' : this.formatDate(currentValue);
+            }
+
+            formatDate(dateString) {
+                if (!dateString) return '-';
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                return new Date(dateString).toLocaleDateString('id-ID', options);
+            }
+
+            getStatusText(status) {
+                const statusMap = {
+                    'waiting': 'Menunggu',
+                    'ongoing': 'Berlangsung',
+                    'completed': 'Selesai',
+                    'menunggu': 'Menunggu',
+                    'sedang_berlangsung': 'Berlangsung',
+                    'selesai': 'Selesai'
+                };
+                return statusMap[status] || 'Menunggu';
+            }
+
+            showLoading() {
+                const tbody = document.getElementById('queue-table-body');
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;"><div class="loading"></div> Memuat data...</td></tr>';
+            }
+
+            showNotification(message, type = 'success') {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.className = `notification ${type} show`;
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 5000);
+            }
+
+            startAutoRefresh() {
+                // Refresh data setiap 10 detik
+                setInterval(() => {
+                    this.loadQueueData();
+                }, 10000);
+            }
+        }
+
+        // Global instance
+        let adminSystem;
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            adminSystem = new AdminSystem();
+        });
+    </script>
+</body>
+</html>
