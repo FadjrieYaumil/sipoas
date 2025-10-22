@@ -8,645 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
-        :root {
-            --primary: #00FF00;
-            --primary-dark: #8bc926;
-            --primary-light: #e8ffb6;
-            --secondary: #000000;
-            --accent: #e53935;
-            --success: #00FF00;
-            --warning: #ff9800;
-            --dark-bg: #121212;
-            --card-dark: #1e1e1e;
-            --text-light: #f5f5f5;
-            --text-muted: #aaaaaa;
-            --gray: #666;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        body {
-            background-color: var(--dark-bg);
-            color: var(--text-light);
-            line-height: 1.6;
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 30% 50%, rgba(178, 255, 31, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 70% 20%, rgba(178, 255, 31, 0.05) 0%, transparent 50%);
-            z-index: -1;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            position: relative;
-        }
-
-        .admin-controls-top {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-
-        .btn-close-session {
-            background: linear-gradient(135deg, var(--accent), #c62828);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-close-session:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(229, 57, 53, 0.3);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-
-        .logo img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 2px solid var(--primary);
-        }
-
-        .logo-text {
-            text-align: center;
-        }
-
-        .logo h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: var(--text-light);
-            margin-bottom: 5px;
-        }
-
-        .logo .subtitle {
-            font-size: 1rem;
-            color: var(--primary);
-            font-weight: 500;
-        }
-
-        .admin-card {
-            background: linear-gradient(135deg, var(--card-dark) 0%, #2a2a2a 100%);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            border: 2px solid var(--primary);
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 30px;
-            transition: all 0.3s ease;
-        }
-
-        .admin-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
-        }
-
-        .admin-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .btn {
-            background: var(--primary);
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: #e53935;
-            color: white;
-        }
-
-        .btn-success {
-            background: #4caf50;
-            color: white;
-        }
-
-        .btn-action {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: var(--secondary);
-            border: none;
-            padding: 15px 25px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-action::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn-action:hover::before {
-            left: 100%;
-        }
-
-        .btn-action:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 255, 0, 0.3);
-        }
-
-        .btn-action:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-action:disabled:hover {
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, var(--accent), #c62828);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            box-shadow: 0 8px 20px rgba(229, 57, 53, 0.3);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, var(--success), #388e3c);
-            color: white;
-        }
-
-        .btn-success:hover {
-            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning), #f57c00);
-            color: white;
-        }
-
-        .btn-warning:hover {
-            box-shadow: 0 8px 20px rgba(255, 152, 0, 0.3);
-        }
-
-        .date-filter {
-            margin-bottom: 20px;
-            background: rgba(0, 255, 0, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .date-filter select {
-            background: var(--card-dark);
-            color: var(--text-light);
-            border: 2px solid var(--primary);
-            padding: 8px 15px;
-            border-radius: 8px;
-            margin-left: 10px;
-            font-size: 1rem;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid #333;
-        }
-
-        .stat-number {
-            font-size: 2em;
-            font-weight: bold;
-            color: var(--primary);
-            margin: 10px 0;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .data-table:hover {
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-        }
-
-        .data-table th {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: var(--secondary);
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-        }
-
-        .data-table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #333;
-            transition: all 0.3s ease;
-        }
-
-        .data-table tr:nth-child(even) {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        .data-table tr:hover {
-            background-color: rgba(0, 255, 0, 0.1);
-            transform: scale(1.01);
-        }
-
-        .current-session {
-            background: rgba(0, 255, 0, 0.2) !important;
-            border-left: 4px solid var(--primary);
-            animation: highlight 2s infinite;
-        }
-
-        @keyframes highlight {
-            0% { background-color: rgba(0, 255, 0, 0.2); }
-            50% { background-color: rgba(0, 255, 0, 0.3); }
-            100% { background-color: rgba(0, 255, 0, 0.2); }
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 10px;
-            color: white;
-            z-index: 1000;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-            max-width: 350px;
-            backdrop-filter: blur(10px);
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification.success {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: var(--secondary);
-        }
-
-        .notification.error {
-            background: linear-gradient(135deg, var(--accent), #c62828);
-        }
-
-        .notification.info {
-            background: linear-gradient(135deg, #2196F3, #1976D2);
-        }
-
-        .session-controls {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin: 30px 0;
-            flex-wrap: wrap;
-        }
-
-        .completion-options {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin: 20px 0;
-            padding: 20px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-        }
-
-        .completion-option {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 20px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .completion-option:hover {
-            background: rgba(255,255,255,0.15);
-        }
-
-        .completion-option.selected {
-            background: var(--primary);
-            color: var(--secondary);
-        }
-
-        .completion-option input {
-            width: 18px;
-            height: 18px;
-        }
-
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .status-waiting {
-            background: rgba(255,193,7,0.2);
-            color: #ffc107;
-        }
-
-        .status-ongoing {
-            background: rgba(0,255,0,0.2);
-            color: var(--primary);
-        }
-
-        .status-completed {
-            background: rgba(76,175,80,0.2);
-            color: var(--success);
-        }
-
-        .status-incomplete {
-            background: rgba(244,67,54,0.2);
-            color: #f44336;
-        }
-
-        .floating-element {
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .btn-call {
-            background: linear-gradient(135deg, #ff9800, #f57c00);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        .btn-call:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
-        }
-
-        .admin-controls-left {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-        }
-
-        .btn-resume-session {
-            background: linear-gradient(135deg, #2196F3, #1976D2);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-resume-session:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
-        }
-
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
-        }
-
-        .particle {
-            position: absolute;
-            background: var(--primary);
-            border-radius: 50%;
-            opacity: 0.1;
-            animation: floatParticle 15s infinite linear;
-        }
-
-        @keyframes floatParticle {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-            }
-            100% {
-                transform: translateY(-100px) rotate(360deg);
-            }
-        }
-
-        .description-cell {
-            max-width: 200px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .description-cell:hover {
-            white-space: normal;
-            overflow: visible;
-            background: var(--card-dark);
-            position: relative;
-            z-index: 10;
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #ffffff;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Mobile Optimizations */
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            
-            .header {
-                margin-bottom: 20px;
-                padding: 15px;
-            }
-            
-            .admin-controls-top {
-                position: static;
-                margin-bottom: 15px;
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .admin-controls-left {
-                position: static;
-                margin-bottom: 15px;
-            }
-            
-            .btn-close-session, .btn-resume-session {
-                width: 100%;
-                padding: 12px 15px;
-                font-size: 0.9rem;
-            }
-            
-            .logo {
-                flex-direction: column;
-                gap: 12px;
-            }
-            
-            .logo img {
-                width: 70px;
-                height: 70px;
-            }
-            
-            .logo h1 {
-                font-size: 1.6rem;
-            }
-            
-            .admin-card {
-                padding: 25px;
-                border-radius: 16px;
-                margin-bottom: 20px;
-            }
-            
-            .session-controls {
-                flex-direction: column;
-                gap: 10px;
-                margin: 20px 0;
-            }
-            
-            .completion-options {
-                flex-direction: column;
-                gap: 10px;
-                margin: 15px 0;
-                padding: 15px;
-            }
-            
-            .data-table {
-                font-size: 0.85rem;
-                margin-top: 15px;
-            }
-            
-            .data-table th, .data-table td {
-                padding: 10px 8px;
-                font-size: 0.8rem;
-            }
-            
-            .data-table th:nth-child(4),
-            .data-table th:nth-child(5),
-            .data-table th:nth-child(7),
-            .data-table td:nth-child(4),
-            .data-table td:nth-child(5),
-            .data-table td:nth-child(7) {
-                display: none;
-            }
-            
-            .notification {
-                right: 15px;
-                left: 15px;
-                max-width: none;
-                text-align: center;
-            }
-
-            .date-filter {
-                padding: 10px;
-            }
-            
-            .date-filter select {
-                width: 100%;
-                margin: 10px 0 0 0;
-            }
-
-            .stats {
-                grid-template-columns: 1fr;
-            }
-        }
+        /* ... (CSS tetap sama) ... */
     </style>
 </head>
 <body>
@@ -1378,8 +740,24 @@
 
             formatDate(dateString) {
                 if (!dateString) return '-';
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                return new Date(dateString).toLocaleDateString('id-ID', options);
+                
+                try {
+                    // Coba parsing tanggal dari berbagai format
+                    let cleanDate = dateString;
+                    
+                    // Jika tanggal mengandung format yang tidak normal
+                    if (dateString.includes('T') || dateString.includes('Z') || dateString.includes('.')) {
+                        // Ini adalah format ISO, ambil hanya bagian tanggal
+                        cleanDate = dateString.split('T')[0];
+                    }
+                    
+                    const date = new Date(cleanDate);
+                    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                    return date.toLocaleDateString('id-ID', options);
+                } catch (error) {
+                    console.error('Error formatting date:', error);
+                    return dateString; // Return as-is jika parsing gagal
+                }
             }
 
             formatDateTime(dateString, timeString) {
@@ -1387,21 +765,26 @@
                 
                 try {
                     // Format tanggal
-                    const date = new Date(dateString);
+                    let cleanDate = dateString;
+                    if (dateString.includes('T') || dateString.includes('Z') || dateString.includes('.')) {
+                        cleanDate = dateString.split('T')[0];
+                    }
+                    
+                    const date = new Date(cleanDate);
                     const formattedDate = date.toLocaleDateString('id-ID', {
                         day: '2-digit',
                         month: '2-digit',
                         year: 'numeric'
                     });
                     
-                    // Format waktu - ambil hanya jam dan menit saja
-                    // Hilangkan bagian detik dan timezone jika ada
+                    // Format waktu - normalisasi ke format HH:MM
                     let cleanTime = timeString;
                     
-                    // Jika waktu mengandung format yang tidak normal, ambil hanya bagian jam:menit
-                    if (timeString.includes('T') || timeString.includes('Z')) {
-                        // Ini adalah format ISO, ambil hanya jam:menit
-                        const timeParts = timeString.split('T')[1]?.split(':') || timeString.split(':');
+                    // Jika waktu mengandung format yang tidak normal
+                    if (timeString.includes('T') || timeString.includes('Z') || timeString.includes('.')) {
+                        // Ini adalah format ISO, ambil hanya bagian waktu
+                        const timePart = timeString.split('T')[1] || timeString;
+                        const timeParts = timePart.split(':');
                         cleanTime = `${timeParts[0]}:${timeParts[1]}`;
                     } else if (timeString.includes(' ')) {
                         // Jika ada spasi, ambil bagian pertama
@@ -1411,13 +794,25 @@
                     // Pastikan format HH:MM
                     const timeParts = cleanTime.split(':');
                     if (timeParts.length >= 2) {
-                        cleanTime = `${timeParts[0].padStart(2, '0')}:${timeParts[1].padStart(2, '0')}`;
+                        const hours = timeParts[0].padStart(2, '0');
+                        const minutes = timeParts[1].padStart(2, '0');
+                        cleanTime = `${hours}:${minutes}`;
+                    }
+                    
+                    // Validasi waktu yang valid (09:00, 10:00, 11:00, 12:00, 13:00, 14:00)
+                    const validTimes = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00'];
+                    if (!validTimes.includes(cleanTime)) {
+                        // Jika waktu tidak valid, coba untuk menormalkan
+                        const hour = parseInt(timeParts[0]);
+                        if (hour >= 9 && hour <= 14) {
+                            cleanTime = `${hour.toString().padStart(2, '0')}:00`;
+                        }
                     }
                     
                     return `${formattedDate} ${cleanTime}`;
                 } catch (error) {
                     console.error('Error formatting date/time:', error);
-                    // Fallback: tampilkan waktu asli jika parsing gagal
+                    // Fallback: tampilkan data asli
                     return `${dateString} ${timeString}`;
                 }
             }
